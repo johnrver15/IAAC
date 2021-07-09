@@ -1,0 +1,7 @@
+#!/bin/bash
+
+python_ver=$(python3 --version | cut -d' ' -f2)
+
+cat << EOF
+{ "Python_version": "${python_ver}" }
+EOF

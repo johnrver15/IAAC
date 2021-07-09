@@ -1,0 +1,67 @@
+- hosts: remoto
+  gather_facts: true
+
+  tasks:
+  - name: Instalando python3
+    apt:
+      name: python3
+      update_cache: yes
+      state: present
+    
+  - name: Instalando python3-pip
+    apt:
+      name: python3-pip
+      update_cache: yes
+      state: present
+
+  - name: Instalando mongodb
+    apt:
+      name: mongodb
+      update_cache: yes
+      state: present
+
+  - name: Enable and start mongodb
+    systemd:
+      state: started
+      name: mongodb
+      enabled: yes
+  
+  - name: Create Directory slacko-api
+    file:
+      path: /opt/slacko-api/
+      state: directory
+
+  - name: Copy requeriments.txt
+    copy:
+      src: /vagrant/ansible_slacko/files/requeriments.txt
+      dest: /opt/slacko-api/
+      mode: 0777
+  
+  - name: Copy slacko-api.sh
+    copy:
+      src: /vagrant/ansible_slacko/files/slacko-api.sh
+      dest: /opt/slacko-api/
+      mode: 0777
+
+  - name: Copy main.py
+    copy:
+      src: /vagrant/ansible_slacko/files/
+      dest: /opt/slacko-api/
+      mode: 0777
+
+  - name: Install specified python requirements
+    pip:
+      requirements: /opt/slacko-api/requeriments.txt
+
+  - name: Criando o serviço
+    copy:
+      src: slacko-api.service
+      dest: /etc/systemd/system
+      owner: root
+      group: root
+
+  - name: Iniciando o slacko-api
+    ansible.builtin.service:
+      name: slacko-api
+      state: started
+      enabled: yes

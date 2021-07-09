@@ -1,0 +1,7 @@
+#!/bin/bash
+
+ssh_pass=$(cat /etc/ssh/sshd_config | grep "^PasswordAuthentication" | cut -d" " -f2)
+
+cat << EOF
+  { "ssh_config_permit_pass_auth" : "${ssh_pass}" }
+EOF
